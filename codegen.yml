@@ -1,0 +1,27 @@
+overwrite: true
+require:
+  - ts-node/register/transpile-only
+  - tsconfig-paths/register
+schema:
+  - 'src/modules/**/schema/*.graphql'
+generates:
+  ./src/generated/models.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - typescript
+      - typescript-resolvers
+      - typescript-operations
+  # ./src/modules:
+  #   preset: graphql-modules
+  #   presetConfig:
+  #     baseTypesPath: ../generated/types.ts
+  #     filename: types.ts
+  #   plugins:
+  #     - add:
+  #         content: '/* eslint-disable */'
+  #     - typescript
+  #     - typescript-resolvers
+  #     - typescript-operations
+  #   config:
+  #     contextType: '../lib/Context#ContextType as ContextTypeDef'

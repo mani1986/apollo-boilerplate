@@ -1,0 +1,53 @@
+type Query {
+  getStatus: StatusResponse!
+}
+
+type Mutation {
+  updateUser(input: UpdateUserInput): UserResponse!
+  sendPushNotification(clientId: String, title: String!, body: String!): String
+}
+
+# Responses
+type StatusResponse {
+  user: UserResponse
+}
+
+type UserResponse {
+  id: String!
+  profile: UserProfileResponse!
+  role: UserRole!
+  onboardingStatus: OnboardingStatus!
+}
+
+type UserProfileResponse {
+  email: String
+  fullName: String
+  phoneNumber: String
+  avatarUrl: String
+}
+
+# Input
+input UpdateUserInput {
+  onboardingStatus: OnboardingStatus
+  profile: UserProfileInput
+}
+
+input UserProfileInput {
+  phoneNumber: String
+}
+
+# Enum
+enum UserRole {
+  Admin
+  ClientManager
+}
+
+enum UserSource {
+  AzureActiveDirectory
+  Manual
+}
+
+enum OnboardingStatus {
+  Initial
+  Onboarded
+}

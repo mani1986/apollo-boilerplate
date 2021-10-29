@@ -1,0 +1,55 @@
+# Responses
+type MediaResponse {
+  type: MediaType!
+  value: String!
+  thumbnail: String
+  color: String
+}
+
+type MessageResponse {
+  message: String!
+}
+
+type GenericResponse {
+  message: String!
+}
+
+# Scalars
+scalar Date
+
+# Enums
+enum AuthTokenKind {
+  Auth
+}
+
+enum NotificationStatus {
+  Initial
+  Declined
+  Approved
+}
+
+enum UploadType {
+  Store
+  Temporary
+}
+
+enum MediaType {
+  YouTube
+  Image
+}
+
+enum NotificationType {
+  Manual
+}
+
+enum NotificationDeliveryMethod {
+  MobilePush
+  Web
+}
+
+enum NotificationDeliveryStatus {
+  Initial
+  Delivered
+  Viewed
+  FailedToDeliver
+}

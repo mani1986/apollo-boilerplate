@@ -1,0 +1,97 @@
+{
+  "name": "apollo-boilerplate",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "gen": "graphql-codegen",
+    "gen:watch": "nodemon --exec yarn gen -e graphql",
+    "start": "yarn gen && yarn start:server",
+    "start:server": "ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "migrate-mongo up && nodemon --exec yarn start:server -e ts",
+    "dev:debug": "ts-node-dev --inspect=4321 -r tsconfig-paths/register --respawn --transpileOnly src/index.ts",
+    "build": "tsc",
+    "prod": "NODE_ENV=production PORT=5000 node dist/index.js",
+    "lint": "eslint .",
+    "test": "MONGO_DBNAME=project_test mocha --recursive -r tsconfig-paths/register -r ts-node/register -r source-map-support/register test/index.ts",
+    "test-azure": "nyc --report covertura mocha --recursive -r tsconfig-paths/register -r ts-node/register -r source-map-support/register --reporter mocha-junit-reporter test/index.ts",
+    "seed": "node -r ts-node/register -r tsconfig-paths/register ./scripts/seed.ts"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "test"
+    }
+  },
+  "dependencies": {
+    "@graphql-tools/load-files": "^6.0.18",
+    "@graphql-tools/merge": "^6.0.18",
+    "@typegoose/typegoose": "^9.2.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/faker": "^5.5.9",
+    "@types/jsonwebtoken": "^8.3.9",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.7.7",
+    "@types/node-persist": "^3.1.1",
+    "@types/node-pushnotifications": "^1.0.3",
+    "@types/uuid": "^8.3.0",
+    "apollo-server-express": "^3.4.0",
+    "bcrypt": "^5.0.1",
+    "chai-as-promised": "^7.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "faker": "^5.5.3",
+    "graphql": "^15.7.2",
+    "graphql-import-node": "^0.0.4",
+    "graphql-modules": "^1.4.4",
+    "jsonwebtoken": "^8.5.1",
+    "migrate-mongo": "^8.2.2",
+    "moment": "^2.24.0",
+    "mongoose": "^6.0.12",
+    "node-persist": "^3.1.0",
+    "node-pushnotifications": "^1.6.1",
+    "npm-cache": "^0.7.0",
+    "reflect-metadata": "^0.1.13",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^12.0.1",
+    "@commitlint/config-conventional": "^12.0.1",
+    "@graphql-codegen/add": "^3.1.0",
+    "@graphql-codegen/cli": "^2.2.1",
+    "@graphql-codegen/typescript": "2.2.4",
+    "@graphql-codegen/typescript-operations": "^2.1.8",
+    "@graphql-codegen/typescript-resolvers": "2.3.2",
+    "@types/chai": "^4.2.11",
+    "@types/chai-as-promised": "^7.1.2",
+    "@types/mocha": "^5.2.7",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "chai": "^4.2.0",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^6.0.0",
+    "mocha": "^7.0.0",
+    "mocha-junit-reporter": "^2.0.0",
+    "nodemon": "^2.0.14",
+    "nyc": "^15.1.0",
+    "prettier": "^2.4.1",
+    "source-map-support": "^0.5.20",
+    "ts-node": "^10.4.0",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.4.4"
+  },
+  "engines": {
+    "node": ">=0.12"
+  },
+  "nyc": {
+    "reporter": [
+      "cobertura"
+    ],
+    "report-dir": "./"
+  }
+}

@@ -1,0 +1,106 @@
+resources:
+  containers:
+    - container: node
+      image: circleci/node:12.14.1-browsers
+      options: --user 0:0
+    - container: mongo
+      image: mongo:3.6.11
+      options: --user 0:0
+
+name: project-$(Build.BuildId)
+
+variables:
+  dockerRegistryServiceConnection: ''
+  imageRepository: 'project'
+  containerRegistry: 'ivlab.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+  branch: '$(Build.SourceBranchName)'
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+container: node
+
+services:
+  mongo: mongo
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk'
+    inputs:
+      packageType: sdk
+      version: 2.2.203
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: Cache@2
+    inputs:
+      key: 'yarn | "$(Agent.OS)" | yarn.lock'
+      restoreKeys: |
+        yarn | "$(Agent.OS)"
+        yarn
+      path: $(YARN_CACHE_FOLDER)
+    displayName: Cache Yarn packages
+
+  - task: NodeTool@0
+    displayName: Node 12
+    inputs:
+      versionSpec: '12.x'
+
+  - script: yarn install
+    displayName: Yarn install
+
+  - script: yarn build
+    displayName: Build
+
+  # - script: yarn test-azure --exit
+  - task: CmdLine@2
+    inputs:
+      script: |
+        yarn test --exit
+        yarn test-azure --exit
+    env:
+      DB_NAME: project
+      MONGO_HOSTNAME: mongo
+      PORT: 4012
+      SECRET: $(SECRET)
+      TOKEN_VALIDITY_MINUTES: 180
+      ADMIN_PASSWORD: $(ADMIN_PASSWORD)
+      ADMIN_EMAIL: admin@ivlab.amsterdam.nl
+      NODE_ENV: production
+      BASE_LANGUAGE: en
+      TOPIC: ${TOPIC}
+      APNS_P8: ${APNS_P8}
+      FCM_API_KEY: ${FCM_API_KEY}
+      APNS_KEY_ID: ${APNS_KEY_ID}
+      APNS_TEAM_ID: ${APNS_TEAM_ID}
+    displayName: Test
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testRunner: JUnit
+      testResultsFiles: '**/test-results.xml'
+      failTaskOnFailedTests: true
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/cobertura-coverage.xml'
+
+  - task: Docker@2
+    displayName: Build and push an image to container registry
+    condition: |
+      and(
+        not(failed()),
+        not(canceled()),
+        eq(variables['Build.Reason'], 'PullRequest')
+      )
+    inputs:
+      command: buildAndPush
+      repository: $(imageRepository)
+      dockerfile: $(dockerfilePath)
+      containerRegistry: $(dockerRegistryServiceConnection)
+      tags: |
+        $(branch)
+        acceptance
