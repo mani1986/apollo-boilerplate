@@ -1,14 +1,13 @@
+import { OnboardingStatus } from '@models'
+import { gql } from 'apollo-server-express'
 import { expect } from 'chai'
 import { testkit } from 'graphql-modules'
-import { gql } from 'apollo-server-express'
-import SeedUtil from 'utils/SeedUtil'
-import { CommonModule } from 'modules/common'
-import { AuthProvider } from 'modules/auth/providers/AuthProvider'
-import { MockAuthProvider } from './mock/MockAuthProvider'
-import { UserModule } from 'modules/user'
 import { AuthModule } from 'modules/auth'
-import { OnboardingStatus, Route } from '@models'
-import UserUtil from 'utils/UserUtil'
+import { AuthProvider } from 'modules/auth/providers/AuthProvider'
+import { CommonModule } from 'modules/common'
+import { UserModule } from 'modules/user'
+import SeedUtil from 'utils/SeedUtil'
+import { MockAuthProvider } from './mock/MockAuthProvider'
 
 describe('UserModule', () => {
   let app: any
